@@ -15,6 +15,9 @@ public class MainActivity extends AppCompatActivity {
     char currentCharacter;
     char previousCharacter;
     int numPeren, numLeftPeren, numRightPeren;
+    boolean pointHasEnded = true;
+    int numPoints;
+    String originalString;
     //Button buttonC, buttonleftPeren, buttonrightPeren, buttonPower;
 
     @Override
@@ -22,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         int test = 0;
+
 
         button0 = findViewById(R.id.button0);
         button1 = findViewById(R.id.button1);
@@ -234,36 +238,60 @@ public class MainActivity extends AppCompatActivity {
                 numPeren = 0;
                 numLeftPeren = 0;
                 numRightPeren = 0;
+                currentCharacter = '\0';
+                previousCharacter = '\0';
+
             }
         });
 
         buttonPeren.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //originalString = edt11;
                 tooString();
-                if (numPeren == 0) {
-                    edt1.setText(edt11 + "(");
-                    numLeftPeren++;
-                } else if ((numLeftPeren > numRightPeren && (Character.isDigit(edt11.charAt(lengthOfEquation - 1))) || (numLeftPeren > numRightPeren && currentCharacter == ')'))){     //there exists a *,-,+,/,^ between last (
-                    edt1.setText(edt11 + ")");
-                    numRightPeren++;
-                }else{
-                    edt1.setText(edt11 + "(");
-                    numLeftPeren++;
-                }
-                numPeren++;
-                ttt();
+                /*if(currentCharacter == '.'){
+
+                    if (numLeftPeren > numRightPeren){
+                        edt1.setText(originalString + "0)");
+                        previousCharacter = '0';
+                        currentCharacter = ')';
+                        pointHasEnded = true;
+                        numPoints = 0;
+                        numRightPeren++;
+                    } else {
+                        edt1.setText(originalString + "0(");
+                        previousCharacter = '0';
+                        currentCharacter = '(';
+                        pointHasEnded = true;
+                        numPoints = 0;
+                        numLeftPeren++;
+                    }
+                }else {*/
+                    if (numPeren == 0) {
+                        edt1.setText(edt11 + "(");
+                        numLeftPeren++;
+                    } else if ((numLeftPeren > numRightPeren && (Character.isDigit(edt11.charAt(lengthOfEquation - 1))) || (numLeftPeren > numRightPeren && currentCharacter == ')'))) {     //there exists a *,-,+,/,^ between last (
+                        edt1.setText(edt11 + ")");
+                        numRightPeren++;
+                    } else {
+                        edt1.setText(edt11 + "(");
+                        numLeftPeren++;
+                    }
+                    numPeren++;
+                    ttt();
+               // }
             }
         });
 
-        buttonNegative.setOnClickListener(new View.OnClickListener() {
+        /*buttonNegative.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 tooString();
                 edt1.setText(edt11 +"(-");
+                numLeftPeren++;
                 ttt();
             }
-        });
+        });*/
 
         buttonPower.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -300,16 +328,82 @@ public void tooString(){
 
 }
 public void ttt(){
+    originalString = edt11;
     tooString();
     lengthOfEquation = edt11.length();
     previousCharacter = currentCharacter;
     currentCharacter = edt11.charAt(lengthOfEquation-1);
    // System.out.print(lengthOfEquation);
       //edt1.setText(edt11 + currentCharacter);
-   if((currentCharacter == '+' || currentCharacter == '-' || currentCharacter == '*' || currentCharacter == '/' || currentCharacter == ')' || currentCharacter == '^') && lengthOfEquation <= 1 ){
+   if((currentCharacter == '+' || currentCharacter == '*' || currentCharacter == '/' || currentCharacter == ')' || currentCharacter == '^') && lengthOfEquation <= 1 ){ //first thing is equation should not be any of these
+        edt1.setText(originalString);
+       previousCharacter = '\0';
+       currentCharacter = '\0';
+   }
+   if(currentCharacter == '-' && (previousCharacter == '-')){
+        edt1.setText(originalString);
+   }
+   if((currentCharacter == '+' || currentCharacter == '*' || currentCharacter == '/' || currentCharacter == '^') && (previousCharacter == '+' || previousCharacter == '-' || previousCharacter == '*' || previousCharacter == '/' || previousCharacter == ')' || previousCharacter == '(' || previousCharacter == '^')) { //any of these should not be able to be typed one after the other aka in a row
+        edt1.setText(originalString);
+        /*if(lengthOfEquation < 3){
 
-        edt1.setText(edt11 + "fughsdufgs");
+        }else{
+            previousCharacter = edt11.charAt(lengthOfEquation-3);
+            currentCharacter = edt11.charAt(lengthOfEquation-2);
+        }*/
+
+   }
+   /*if((currentCharacter == '(' || currentCharacter == ')') && previousCharacter == '.'){
+
+       previousCharacter = '0';
+       numPeren--;
+
+       if(numLeftPeren > numRightPeren){
+           currentCharacter = ')';
+           edt1.setText(originalString + "0)");
+       }
+       else{
+           currentCharacter = '(';
+           edt1.setText(originalString + "0(");
+       }
+
+   }*/
+   if((previousCharacter == '.' && !(Character.isDigit(edt11.charAt(lengthOfEquation - 1)))) && currentCharacter != '.'){
+        //if(currentCharacter == '+' || currentCharacter == '-' || currentCharacter == '*' || currentCharacter == '/' || currentCharacter == '^' ){
+            edt1.setText(originalString + "0" + currentCharacter);
+            previousCharacter = '0';
+            currentCharacter = currentCharacter;
+            pointHasEnded = true;
+            numPoints = 0;
+        /*}else {
+            edt1.setText(originalString + "0");
+            previousCharacter = '.';
+            currentCharacter = '0';
+            pointHasEnded = true;
+            numPoints = 0;
+        }*/
+       //edt1.setText("its now true1");
     }
+    if(pointHasEnded == false && currentCharacter == '.' && numPoints > 0){
+        edt1.setText(originalString);
+        /*if(lengthOfEquation < 3){
+
+        }else{
+            previousCharacter = edt11.charAt(lengthOfEquation-3);
+            currentCharacter = edt11.charAt(lengthOfEquation-2);
+        }*/
+    }
+    if(currentCharacter == '.' && pointHasEnded == true && numPoints == 0){
+       pointHasEnded = false;
+       numPoints++;
+        //edt1.setText(edt11 + "its now false");
+    }
+    if(currentCharacter == '+' || currentCharacter == '-' || currentCharacter == '*' || currentCharacter == '/' || currentCharacter == '(' || currentCharacter == ')' || currentCharacter == '^' ){
+        pointHasEnded = true;
+        //edt1.setText("its now true2");
+        numPoints = 0;
+    }
+
 }
 
 }
