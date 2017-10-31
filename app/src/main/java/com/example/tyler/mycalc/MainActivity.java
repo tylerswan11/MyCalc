@@ -400,6 +400,7 @@ public void ttt(){
     }
     if(currentCharacter == '+' || currentCharacter == '-' || currentCharacter == '*' || currentCharacter == '/' || currentCharacter == '(' || currentCharacter == ')' || currentCharacter == '^' ){
         pointHasEnded = true;
+        //dfdsg
         //edt1.setText("its now true2");
         numPoints = 0;
     }
