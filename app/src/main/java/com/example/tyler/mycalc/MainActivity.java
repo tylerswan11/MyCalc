@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     boolean done = false;
     int counter = 0;
     String token;
+    int counterSubtraction = 0;
     //Button buttonC, buttonleftPeren, buttonrightPeren, buttonPower;
 
     @Override
@@ -298,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
                 operandStack.clear();
                 operatorStack.clear();
                 counter = 0;
+                counterSubtraction = 0;
 
             }
         });
@@ -325,16 +327,20 @@ public class MainActivity extends AppCompatActivity {
                         numLeftPeren++;
                     }
                 }else {*/
-                    if (numPeren == 0) {
+                    if (numPeren == 0 && currentCharacter == '\0') {
                         edt1.setText(edt11 + "(");
                         numLeftPeren++;
                     } else if (numLeftPeren > numRightPeren && (Character.isDigit(edt11.charAt(lengthOfEquation - 1))) || (numLeftPeren > numRightPeren && currentCharacter == ')')) {     //there exists a *,-,+,/,^ between last (
                         edt1.setText(edt11 + ")");
                         numRightPeren++;
-                    } else {
+                    } else if (currentCharacter == ')' || currentCharacter == '(' || currentCharacter == '-' || currentCharacter == '+' || currentCharacter == '*' || currentCharacter == '/' || currentCharacter == '^') {     //there exists a *,-,+,/,^ between last (
                         edt1.setText(edt11 + "(");
                         numLeftPeren++;
+                    } else {
+                        edt1.setText(edt11 + "*(");
+                        numLeftPeren++;
                     }
+                    //edt1.setText("x" + currentCharacter);
                     numPeren++;
                     ttt();
                // }
@@ -399,7 +405,16 @@ public void ttt(){
        currentCharacter = '\0';
    }
    if(currentCharacter == '-' && (previousCharacter == '-')){
-        edt1.setText(originalString);
+       counterSubtraction++;
+       if(counterSubtraction>1){
+           edt1.setText(originalString);
+           counterSubtraction = 0;
+
+       }else{
+
+       }
+
+       // edt1.setText(originalString);
    }
    if((currentCharacter == '+' || currentCharacter == '*' || currentCharacter == '/' || currentCharacter == '^') && (previousCharacter == '+' || previousCharacter == '-' || previousCharacter == '*' || previousCharacter == '/' || previousCharacter == '(' || previousCharacter == '^')) { //any of these should not be able to be typed one after the other aka in a row
         edt1.setText(originalString);
@@ -488,7 +503,7 @@ public void ttt(){
                 operandStack.push("-" + token);
                 listOfTokens.add("-" + token);
                 negativeInList = false;
-            }else if((("-+/^*()".contains(previousToken)) || (operandStack.empty() && operatorStack.empty())) && ("-".contains(currentToken))) {
+            }else if((("-+/^*(".contains(previousToken)) || (operandStack.empty() && operatorStack.empty())) && ("-".contains(currentToken))) {
                 negativeInList = true;
 
             }else{
@@ -531,24 +546,55 @@ public void ttt(){
                             //edt1.setText("xXpopXXX" + (operatorStack.peek()) + currentOperator + topOfStackOperator + done);
                             done = true;
 
-                        } else if ((operatorStack.peek().equals("-")) && ("-+/^*()".contains(currentToken))) {
+                        } else if ((operatorStack.peek().equals("-")) && ("/^*()".contains(currentToken))) {
                             operatorStack.push(token);
                             done = true;
 
 
-                        } else if ((operatorStack.peek().equals("+")) && ("-+/^*()".contains(currentToken))) {
+                        } else if ((operatorStack.peek().equals("+")) && ("/^*()".contains(currentToken))) {
                             operatorStack.push(token);
                             done = true;
 
-                        } else if ((operatorStack.peek().equals("*")) && ("*/^()".contains(currentToken))) {
+                        } else if ((operatorStack.peek().equals("-")) && ("-+".contains(currentToken))) {
+                            operatorStack.pop();
+                            operandStack.push("-");
+                            //operatorStack.push(token);
+                            topOfStackOperatorNum();
+                            //operandStack.push(token);
+                            if(done == true){
+                                //edt1.setText("xXXXtXXX" + (operatorStack.peek()) + currentOperator + topOfStackOperator);
+                                operatorStack.push(token);
+
+                            }else{
+                                //edt1.setText("xXXXgXXX" + (operatorStack.peek()) + currentOperator + topOfStackOperator + done);
+                                //operatorStack.push(token);
+                            }
+
+
+                        } else if ((operatorStack.peek().equals("+")) && ("-+".contains(currentToken))) {
+                            operatorStack.pop();
+                            operandStack.push("+");
+                            //operatorStack.push(token);
+                            topOfStackOperatorNum();
+                            //operandStack.push(token);
+                            if(done == true){
+                                //edt1.setText("xXXXtXXX" + (operatorStack.peek()) + currentOperator + topOfStackOperator);
+                                operatorStack.push(token);
+
+                            }else{
+                                //edt1.setText("xXXXgXXX" + (operatorStack.peek()) + currentOperator + topOfStackOperator + done);
+                                //operatorStack.push(token);
+                            }
+
+                        } else if ((operatorStack.peek().equals("*")) && ("^()".contains(currentToken))) {
                             operatorStack.push(token);
                             done = true;
 
-                        } else if ((operatorStack.peek().equals("/")) && ("*/^()".contains(currentToken))) {
+                        } else if ((operatorStack.peek().equals("/")) && ("^()".contains(currentToken))) {
                             operatorStack.push(token);
                             done = true;
 
-                        } else if ((operatorStack.peek().equals("*")) && ("-+".contains(currentToken))) {
+                        } else if ((operatorStack.peek().equals("*")) && ("*/-+".contains(currentToken))) {
                             operatorStack.pop();
                             operandStack.push("*");
                             //operatorStack.push(token);
@@ -564,7 +610,7 @@ public void ttt(){
                             }
                             //edt1.setText("xXX");
 
-                        } else if ((operatorStack.peek().equals("/")) && ("-+".contains(currentToken))) {
+                        } else if ((operatorStack.peek().equals("/")) && ("*/-+".contains(currentToken))) {
                             operatorStack.pop();
                             operandStack.push("/");
                             topOfStackOperatorNum();
@@ -582,7 +628,7 @@ public void ttt(){
                             operatorStack.push(token);
                             done = true;
 
-                        } else if ((operatorStack.peek().equals("^")) && ("-+*/".contains(currentToken))) {
+                        } else if ((operatorStack.peek().equals("^")) && ("-+*/^".contains(currentToken))) {
                             operatorStack.pop();
                             operandStack.push("^");
                             topOfStackOperatorNum();
@@ -666,7 +712,7 @@ public void ttt(){
             operatorStack.pop();
         }
 ///////////////////////////////////////////NOW IN POST FIX//////////////////////////////////////////////////
-        /*Stack finalStack = new Stack();
+        Stack finalStack = new Stack();
         Stack reverseOperandStack = new Stack();
         //double element1 = 0;
         //double element2 = 0;
@@ -679,6 +725,7 @@ public void ttt(){
             reverseOperandStack.push(operandStack.peek());
             operandStack.pop();
         }
+
 
         while(!reverseOperandStack.empty() || (!finalStack.empty())) {
             if((reverseOperandStack.peek().equals("-")) || (reverseOperandStack.peek().equals("+")) || (reverseOperandStack.peek().equals("/")) || (reverseOperandStack.peek().equals("*")) || (reverseOperandStack.peek().equals("^"))){
@@ -712,8 +759,8 @@ public void ttt(){
                 }else{
                     edt1.setText("something went wrong");
                 }
-                if(finalStack.empty()){
-
+                if((finalStack.empty()) && (reverseOperandStack.empty())){
+                    //done
 
                 }else{
                     Double answerObj = new Double(answer);
@@ -731,14 +778,14 @@ public void ttt(){
             }else{
                 finalStack.push(reverseOperandStack.peek());
                 reverseOperandStack.pop();
-                edt1.setText("something went wronggggg");
+                //edt1.setText("something went wronggggg");
             }
-        }*/
+        }
 
 
 
-        edt1.setText("x" + operandStack + operatorStack);
-        //edt1.setText("Answer: " + answer);
+        //edt1.setText("x" + operandStack + operatorStack);
+        edt1.setText("Answer: " + answer);
 
 
 
